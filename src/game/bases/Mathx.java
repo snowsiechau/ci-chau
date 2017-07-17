@@ -1,4 +1,4 @@
-package tklibs;
+package game.bases;
 
 /**
  * Created by huynq on 5/20/17.
@@ -19,7 +19,7 @@ public class Mathx {
 //        return origin.multiply(1  - f).add(destination.multiply(f));
 //    }
 
-    public static double clamp(double value, double min, double max) {
+    public static double clamp(float value, float min, float max) {
         if (value < min) return min;
         if (value > max) return max;
         return value;
