@@ -1,6 +1,5 @@
 package game.bases;
 
-import game.GameWindow;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

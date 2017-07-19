@@ -1,34 +1,61 @@
 package game.players;
 
 import game.Utils;
-import game.bases.Contraints;
-import game.bases.FrameCounter;
-import game.bases.ImageRenderer;
-import game.bases.Vector2D;
+import game.bases.*;
+import game.inputs.InputManager;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.Vector;
 
 /**
  * Created by SNOW on 7/11/2017.
  */
-public class Player {
+public class Player extends GameObject{
 
-    //Properties : Thuoc tinh
-   public Vector2D position;
-   public ImageRenderer imageRenderer;
    Contraints contraints;
+   InputManager inputManager;
 
    FrameCounter coolDownCounter;
    boolean spellDisabled;
 
+   Vector2D velocity;
 
     public Player(){
-        this.position = new Vector2D();
+        this.velocity = new Vector2D();
         this.coolDownCounter = new FrameCounter(17);  // 17 frame  = 300 millisecond
-        this.imageRenderer = new ImageRenderer(Utils.loadAssetImage("players/straight/0.png"));
+        this.renderer = new ImageRenderer(Utils.loadAssetImage("players/straight/0.png"));
+    }
+
+    @Override
+    public void run() {
+        move();
+
+        castSpell();
+    }
+
+    private void castSpell() {
+        if (inputManager.xPressed){
+            PlayerSpell playerSpell = new PlayerSpell();
+            playerSpell.position.set(this.position.add(0,-20));
+            GameObject.add(playerSpell);
+        }
+    }
+
+
+    private void move() {
+        this.velocity.set(0, 0);
+        if (inputManager.leftPressed) this.velocity.x -= 5;
+        if (inputManager.rightPressed) this.velocity.x += 5;
+        if (inputManager.upPressed) this.velocity.y -= 5;
+        if (inputManager.downPressed) this.velocity.y += 5;
+
+        this.position.addUp(velocity);
+
+        this.contraints.make(this.position);
+
     }
 
     public void move(float dx, float dy){
@@ -58,11 +85,11 @@ public class Player {
         }
     }
 
-   public void render(Graphics2D g2d){
-        imageRenderer.render(g2d, position);
-   }
-
    public void setContraints(Contraints contraints){
        this.contraints = contraints;
+   }
+
+   public void setInputManager(InputManager inputManager){
+       this.inputManager = inputManager;
    }
 }
