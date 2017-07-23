@@ -3,10 +3,12 @@ package game;
 import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import game.bases.Contraints;
 import game.bases.GameObject;
+import game.enemies.Enemy;
 import game.enemies.EnemySpawner;
 import game.inputs.InputManager;
 import game.players.Player;
 import game.players.PlayerSpell;
+import game.scenes.Background;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -27,12 +29,12 @@ import static sun.misc.PostVMInitHook.run;
  */
 public class GameWindow extends JFrame{
 
-    BufferedImage background;
-
     private int backGroudY;
 
     private BufferedImage backBufferImage;
     private Graphics2D backBufferGraphic2D;
+
+    Background background;
 
     InputManager inputManager = new InputManager();
 
@@ -41,7 +43,6 @@ public class GameWindow extends JFrame{
 
         setUpWindow();
 
-        loadImage();
         
         addBackground();
         
@@ -52,7 +53,6 @@ public class GameWindow extends JFrame{
         backBufferImage = new BufferedImage(this.getWidth(),this.getHeight(), BufferedImage.TYPE_INT_ARGB);
         backBufferGraphic2D = (Graphics2D) backBufferImage.getGraphics();
 
-        backGroudY = this.getHeight() - background.getHeight();
 
         setupInput();
 
@@ -60,17 +60,25 @@ public class GameWindow extends JFrame{
     }
 
     private void addBackground() {
+        background = new Background();
+
+        background.position.y = this.getHeight();
+        GameObject.add(background);
     }
 
     private void addEnemySpawned() {
-        GameObject.add(new EnemySpawner());
+        Enemy enemy = new Enemy();
+
+        enemy.position.set(background.renderer.getWidth() / 2, 0);
+
+        GameObject.add(enemy);
     }
 
     private void addPlayer() {
         Player player = new Player();
-        player.setContraints(new Contraints(20, this.getHeight(), 0, background.getWidth()));
+        player.setContraints(new Contraints(20, this.getHeight(), 0, background.renderer.getWidth()));
         player.setInputManager(inputManager);
-        player.position.set(background.getWidth() / 2, this.getHeight() - 50);
+        player.position.set(background.renderer.getWidth() / 2, this.getHeight() - 50);
 
         GameObject.add(player);
     }
@@ -81,8 +89,6 @@ public class GameWindow extends JFrame{
             public void keyTyped(KeyEvent e) {
 
             }
-
-
             @Override
             public void keyPressed(KeyEvent e) {
                 inputManager.keyPressed(e);
@@ -113,9 +119,6 @@ public class GameWindow extends JFrame{
     }
 
     private void run(){
-        if (backGroudY <= 0 ) {
-            backGroudY ++;
-        }
 
         GameObject.runAll();
         
@@ -124,7 +127,7 @@ public class GameWindow extends JFrame{
     private void render() {
         backBufferGraphic2D.setColor(Color.BLACK);
         backBufferGraphic2D.fillRect(0,0,this.getWidth(),this.getHeight());
-        backBufferGraphic2D.drawImage(background, 0, backGroudY, null);
+
 
         GameObject.renderAll(backBufferGraphic2D);
 
@@ -132,10 +135,6 @@ public class GameWindow extends JFrame{
         g2d.drawImage(backBufferImage,0,0,null);
     }
 
-    private void loadImage() {
-
-            background = Utils.loadAssetImage("background/0.png");
-    }
 
     private void setUpWindow() {
         this.setSize(800, 800);

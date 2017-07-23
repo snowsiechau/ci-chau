@@ -9,6 +9,8 @@ public class Vector2D {
     public float x;
     public float y;
 
+    public static final Vector2D ZERO = new Vector2D(0,0);
+
     public Vector2D(float x, float y){
         this.x = x;
         this.y = y;
@@ -44,6 +46,22 @@ public class Vector2D {
         return  add(other.x,other.y);
     }
 
+    public Vector2D substract( float x, float y){
+        return new Vector2D(this.x - x, this.y - y);
+    }
+
+    public Vector2D substract(Vector2D other){
+        return substract(other.x, other.y);
+    }
+
+    public Vector2D nomalize(){
+        float length = (float) Math.sqrt(x * x + y * y);
+        return new Vector2D(x / length, y / length);
+    }
+
+    public Vector2D multiply(float f){
+        return new Vector2D( this.x * f, this.y * f);
+    }
 
 
     @Override

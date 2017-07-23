@@ -14,11 +14,13 @@ import java.awt.image.BufferedImage;
 public class PlayerSpell extends GameObject {
 
     public PlayerSpell() {
-
         this.renderer = new ImageRenderer(Utils.loadAssetImage("player-spells/a/1.png"));
     }
 
-    public void run() {
+    @Override
+    public void run(Vector2D parentPosition) {
+        super.run(parentPosition);
+
         this.position.addUp(0, -10);
     }
 

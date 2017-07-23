@@ -23,55 +23,48 @@ public class Player extends GameObject{
 
    Vector2D velocity;
 
+   public static Player instance;
+
     public Player(){
         this.velocity = new Vector2D();
-        this.coolDownCounter = new FrameCounter(17);  // 17 frame  = 300 millisecond
+        this.coolDownCounter = new FrameCounter(10);  // 17 frame  = 300 millisecond
         this.renderer = new ImageRenderer(Utils.loadAssetImage("players/straight/0.png"));
+        instance = this;
     }
 
     @Override
-    public void run() {
+    public void run(Vector2D parentPosition) {
+        super.run(parentPosition);
+
         move();
 
         castSpell();
     }
 
     private void castSpell() {
-        if (inputManager.xPressed){
-            PlayerSpell playerSpell = new PlayerSpell();
-            playerSpell.position.set(this.position.add(0,-20));
-            GameObject.add(playerSpell);
+        if (!spellDisabled) {
+            if (inputManager.xPressed) {
+                PlayerSpell playerSpell = new PlayerSpell();
+                playerSpell.position.set(this.position.add(0, -20));
+                GameObject.add(playerSpell);
+            }
+            spellDisabled = true;
         }
+
+        coolDown();
     }
 
 
     private void move() {
         this.velocity.set(0, 0);
-        if (inputManager.leftPressed) this.velocity.x -= 5;
-        if (inputManager.rightPressed) this.velocity.x += 5;
-        if (inputManager.upPressed) this.velocity.y -= 5;
-        if (inputManager.downPressed) this.velocity.y += 5;
+        if (inputManager.leftPressed) this.velocity.x -= 10;
+        if (inputManager.rightPressed) this.velocity.x += 10;
+        if (inputManager.upPressed) this.velocity.y -= 10;
+        if (inputManager.downPressed) this.velocity.y += 10;
 
         this.position.addUp(velocity);
 
         this.contraints.make(this.position);
-
-    }
-
-    public void move(float dx, float dy){
-        this.position.addUp(dx, dy);
-        contraints.make(this.position);
-    }
-
-    public void castSpell(ArrayList<PlayerSpell> playerSpells){
-        if (!spellDisabled){
-            PlayerSpell playerSpell = new PlayerSpell();
-            playerSpell.position.set(this.position.add(0,-20));
-            playerSpells.add(playerSpell);
-
-            spellDisabled = true;
-        }
-
 
     }
 
