@@ -69,16 +69,16 @@ public class GameWindow extends JFrame{
     private void addEnemySpawned() {
         Enemy enemy = new Enemy();
 
-        enemy.position.set(background.renderer.getWidth() / 2, 0);
+        enemy.position.set(background.getWidth() / 2, 0);
 
         GameObject.add(enemy);
     }
 
     private void addPlayer() {
         Player player = new Player();
-        player.setContraints(new Contraints(20, this.getHeight(), 0, background.renderer.getWidth()));
+        player.setContraints(new Contraints(20, this.getHeight(), 0, background.getWidth()));
         player.setInputManager(inputManager);
-        player.position.set(background.renderer.getWidth() / 2, this.getHeight() - 50);
+        player.position.set(background.getWidth() / 2, this.getHeight() - 50);
 
         GameObject.add(player);
     }

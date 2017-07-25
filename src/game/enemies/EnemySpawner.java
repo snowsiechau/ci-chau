@@ -12,7 +12,6 @@ public class EnemySpawner extends GameObject {
     public void run(Vector2D parentPosition) {
         super.run(parentPosition);
 
-        Enemy enemy = new Enemy();
-        GameObject.add(enemy);
+        
     }
 }

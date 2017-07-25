@@ -2,13 +2,8 @@ package game.players;
 
 import game.Utils;
 import game.bases.*;
+import game.bases.renderers.ImageRenderer;
 import game.inputs.InputManager;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Properties;
-import java.util.Vector;
 
 /**
  * Created by SNOW on 7/11/2017.
@@ -25,11 +20,13 @@ public class Player extends GameObject{
 
    public static Player instance;
 
+
     public Player(){
         this.velocity = new Vector2D();
         this.coolDownCounter = new FrameCounter(10);  // 17 frame  = 300 millisecond
         this.renderer = new ImageRenderer(Utils.loadAssetImage("players/straight/0.png"));
         instance = this;
+
     }
 
     @Override
@@ -39,14 +36,14 @@ public class Player extends GameObject{
         move();
 
         castSpell();
+
     }
 
     private void castSpell() {
         if (!spellDisabled) {
             if (inputManager.xPressed) {
-                PlayerSpell playerSpell = new PlayerSpell();
+                PlayerSpell playerSpell = GameObjectPool.recycle(PlayerSpell.class);
                 playerSpell.position.set(this.position.add(0, -20));
-                GameObject.add(playerSpell);
             }
             spellDisabled = true;
         }
