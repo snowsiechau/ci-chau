@@ -29,15 +29,12 @@ import static sun.misc.PostVMInitHook.run;
  */
 public class GameWindow extends JFrame{
 
-    private int backGroudY;
-
     private BufferedImage backBufferImage;
     private Graphics2D backBufferGraphic2D;
 
     Background background;
 
     InputManager inputManager = new InputManager();
-
 
     public GameWindow(){
 
@@ -67,11 +64,7 @@ public class GameWindow extends JFrame{
     }
 
     private void addEnemySpawned() {
-        Enemy enemy = new Enemy();
-
-        enemy.position.set(background.getWidth() / 2, 0);
-
-        GameObject.add(enemy);
+      GameObject.add(new EnemySpawner());
     }
 
     private void addPlayer() {
@@ -108,27 +101,22 @@ public class GameWindow extends JFrame{
 
             long  currentTime = System.currentTimeMillis();
 
-            if (currentTime - lastUpdateTime > 17){
+            if (currentTime - lastUpdateTime > 17) {
                 lastUpdateTime = currentTime;
                 render();
                 run();
             }
-
-
         }
     }
 
     private void run(){
-
         GameObject.runAll();
-        
     }
 
     private void render() {
         backBufferGraphic2D.setColor(Color.BLACK);
         backBufferGraphic2D.fillRect(0,0,this.getWidth(),this.getHeight());
-
-
+        
         GameObject.renderAll(backBufferGraphic2D);
 
         Graphics2D g2d = (Graphics2D)this.getGraphics();
@@ -137,7 +125,7 @@ public class GameWindow extends JFrame{
 
 
     private void setUpWindow() {
-        this.setSize(800, 800);
+        this.setSize(800, 600);
 
         this.setResizable(false);
         this.setTitle("Touhou - remade by SNOW");
