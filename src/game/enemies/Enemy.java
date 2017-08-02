@@ -1,11 +1,16 @@
 package game.enemies;
 
 import game.Utils;
+import game.actions.Action;
+import game.actions.RepeatForeverAction;
+import game.actions.SequenceAction;
+import game.actions.WaitAction;
 import game.bases.*;
 import game.bases.physics.BoxCollider;
 import game.bases.physics.PhysicBody;
 import game.bases.renderers.Animation;
 import game.bases.renderers.ImageRenderer;
+import game.enemies.shoot.EnemyShootAction;
 import game.players.Player;
 
 /**
@@ -14,8 +19,6 @@ import game.players.Player;
 public class Enemy extends GameObject implements PhysicBody{
 
     public Vector2D velocity;
-    private FrameCounter shootCounter;
-
     BoxCollider boxCollider;
 
     public Enemy(){
@@ -27,10 +30,18 @@ public class Enemy extends GameObject implements PhysicBody{
         );
 
         this.velocity = new Vector2D();
-        this.shootCounter = new FrameCounter(5);
 
         this.boxCollider = new BoxCollider(20,20);
         this.children.add(boxCollider);
+    }
+
+    public void config(){
+        Action shootSequence = new SequenceAction(
+                new WaitAction(20),
+                new EnemyShootAction()
+        );
+
+        this.addAction(new RepeatForeverAction(shootSequence));
     }
 
     @Override
@@ -38,24 +49,13 @@ public class Enemy extends GameObject implements PhysicBody{
         super.run(parentPosition);
         velocity.y = 2;
         this.position.addUp(velocity);
-
-        if (shootCounter.run()){
-            this.shootCounter.reset();
-            shoot();
-        }
     }
 
-    private void shoot() {
-            Vector2D target = Player.instance.position;
-            Vector2D bulletVelocity = target.substract(position)
-                    .nomalize()
-                    .multiply(3);
 
-            EnemyBullet enemyBullet = GameObjectPool.recycle(EnemyBullet.class);
-            enemyBullet.velocity.set(bulletVelocity);
-            enemyBullet.position.set(this.position.x , this.position.y + 15);
-
-
+    public void getHit(int damage){
+        this.isActive = false;
+        EnemyExplosion enemyExplosion = GameObjectPool.recycle(EnemyExplosion.class);
+        enemyExplosion.position.set(this.position);
     }
 
     @Override

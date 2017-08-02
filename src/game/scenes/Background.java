@@ -13,7 +13,6 @@ public class Background extends GameObject{
 
     public Background(){
         super();
-
         imageRenderer = new ImageRenderer(Utils.loadAssetImage("background/0.png"));
         imageRenderer.anchor.set(0,1);
         this.renderer = imageRenderer;

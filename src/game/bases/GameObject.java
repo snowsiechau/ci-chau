@@ -1,13 +1,15 @@
 package game.bases;
 
+import game.actions.Action;
 import game.bases.physics.PhysicBody;
 import game.bases.physics.Physics;
 import game.bases.renderers.Renderer;
 
 import javax.xml.bind.ValidationEvent;
 import java.awt.*;
+import java.util.Iterator;
 import java.util.Vector;
-
+import java.util.List;
 /**
  * Created by SNOW on 7/18/2017.
  */
@@ -20,14 +22,20 @@ public class GameObject {
 
     public boolean isActive;
 
-    public  Vector<GameObject> children;
+    protected    Vector<GameObject> children;
     private static Vector<GameObject> gameObjects = new Vector<>();
     private static Vector<GameObject> newGameObject = new Vector();
+
+    private List<Action> newAction;
+
+    private Vector<Action> actions;
 
     public GameObject(){
         this.position = new Vector2D();
         this.screenPosition = new Vector2D();
         this.children = new Vector<>();
+        this.actions = new Vector<>();
+        this.newAction = new Vector<>();
         this.isActive = true;
     }
 
@@ -41,8 +49,6 @@ public class GameObject {
             Physics.add((PhysicBody) gameObject);
         }
     }
-
-
 
     public static void renderAll(Graphics2D g2d){
         for (GameObject gameObject: gameObjects) {
@@ -60,9 +66,14 @@ public class GameObject {
         }
         gameObjects.addAll(newGameObject);
         newGameObject.clear();
-        System.out.println(gameObjects.size());
-        // Kiem tra doi mot
+    }
 
+    public static void runAllAction(){
+        for (GameObject gameObject: gameObjects){
+            if (gameObject.isActive){
+                gameObject.runAction();
+            }
+        }
     }
 
     public void render(Graphics2D g2d) {
@@ -72,13 +83,42 @@ public class GameObject {
     }
 
     public void run(Vector2D parentPosition){
-        // position == relative
-
         this.screenPosition = parentPosition.add(position);
-
         for (GameObject child: children) {
             child.run(this.screenPosition);
         }
+    }
+
+    public void refresh(){
+        isActive = true;
+        this.actions.clear();
+        this.newAction.clear();
+    }
+
+    public void runAction(){
+        Iterator<Action> iterator = actions.iterator();
+
+        while (iterator.hasNext()){
+            Action action = iterator.next();
+            boolean actionDone = action.run(this);
+
+            if (actionDone){
+                iterator.remove();
+            }
+        }
+
+        actions.addAll(newAction);
+        newAction.clear();
+    }
+
+    public void addAction(Action action){
+        newAction.add(action);
+    }
+
+    public static void clear(){
+        gameObjects.clear();
+        GameObjectPool.clear();
+        Physics.clear();
     }
 
     public void setActive(boolean active) {

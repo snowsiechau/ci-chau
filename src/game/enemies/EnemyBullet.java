@@ -1,6 +1,9 @@
 package game.enemies;
 
 import game.Utils;
+import game.actions.MoveByAction;
+import game.actions.SequenceAction;
+import game.actions.WaitAction;
 import game.bases.GameObject;
 import game.bases.renderers.ImageRenderer;
 import game.bases.Vector2D;
@@ -10,21 +13,25 @@ import game.bases.Vector2D;
  */
 public class EnemyBullet extends GameObject{
 
-    public Vector2D velocity;
-
     public EnemyBullet() {
-
         super();
-        this.velocity = new Vector2D();
         this.renderer = new ImageRenderer(Utils.loadAssetImage("enemies/bullets/blue.png"));
 
+    }
+
+    public void config(Vector2D velocity){
+        this.addAction(
+                new SequenceAction(
+                        new MoveByAction(velocity.multiply(2),10),
+                        new WaitAction(3),
+                        new MoveByAction(velocity,9999)
+                )
+        );
     }
 
     @Override
     public void run(Vector2D parentPosition) {
         super.run(parentPosition);
-        this.position.addUp(velocity);
-
         if (this.position.y > 800){
             this.isActive = false;
         }

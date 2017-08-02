@@ -8,7 +8,7 @@ import game.enemies.EnemySpawner;
 import game.inputs.InputManager;
 import game.players.Player;
 import game.players.PlayerSpell;
-import game.scenes.Background;
+import game.scenes.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -31,56 +31,32 @@ public class GameWindow extends JFrame{
 
     private BufferedImage backBufferImage;
     private Graphics2D backBufferGraphic2D;
+    InputManager inputManager = InputManager.instance;
 
-    Background background;
-
-    InputManager inputManager = new InputManager();
+    Scene startupScene;
 
     public GameWindow(){
-
         setUpWindow();
-
-        
-        addBackground();
-        
-        addPlayer();
-
-        addEnemySpawned();
-
-        backBufferImage = new BufferedImage(this.getWidth(),this.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        backBufferGraphic2D = (Graphics2D) backBufferImage.getGraphics();
-
-
+        setupBackBuffer();
         setupInput();
-
+        setupStartupScene();
         this.setVisible(true);
     }
 
-    private void addBackground() {
-        background = new Background();
-
-        background.position.y = this.getHeight();
-        GameObject.add(background);
+    private void setupStartupScene() {
+        startupScene = new MenuScene();
+        startupScene.init();
     }
 
-    private void addEnemySpawned() {
-      GameObject.add(new EnemySpawner());
-    }
-
-    private void addPlayer() {
-        Player player = new Player();
-        player.setContraints(new Contraints(20, this.getHeight(), 0, background.getWidth()));
-        player.setInputManager(inputManager);
-        player.position.set(background.getWidth() / 2, this.getHeight() - 50);
-
-        GameObject.add(player);
+    private void setupBackBuffer() {
+        backBufferImage = new BufferedImage(this.getWidth(),this.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        backBufferGraphic2D = (Graphics2D) backBufferImage.getGraphics();
     }
 
     private void setupInput() {
         this.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
-
             }
             @Override
             public void keyPressed(KeyEvent e) {
@@ -111,12 +87,15 @@ public class GameWindow extends JFrame{
 
     private void run(){
         GameObject.runAll();
+        GameObject.runAllAction();
+        // change scene
+        SceneManager.instance.changeSceneIfNeeded();
     }
 
     private void render() {
         backBufferGraphic2D.setColor(Color.BLACK);
         backBufferGraphic2D.fillRect(0,0,this.getWidth(),this.getHeight());
-        
+
         GameObject.renderAll(backBufferGraphic2D);
 
         Graphics2D g2d = (Graphics2D)this.getGraphics();
@@ -125,7 +104,7 @@ public class GameWindow extends JFrame{
 
 
     private void setUpWindow() {
-        this.setSize(800, 600);
+        this.setSize(Setting.WINDOW_WIDTH, Setting.WINDOW_HEIGHT);
 
         this.setResizable(false);
         this.setTitle("Touhou - remade by SNOW");

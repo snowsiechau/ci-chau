@@ -22,4 +22,8 @@ public class Physics {
         }
         return null;
     }
+
+    public static void clear(){
+        bodies.clear();
+    }
 }

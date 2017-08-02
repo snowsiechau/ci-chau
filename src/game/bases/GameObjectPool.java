@@ -11,7 +11,7 @@ public class GameObjectPool {
     public static <T extends GameObject> T recycle(Class<T> classz){
         for (GameObject gameObject : pool){
             if (!gameObject.isActive && gameObject.getClass() == classz){
-                gameObject.setActive(true);
+                gameObject.refresh();
                 return (T) gameObject;
             }
         }
@@ -24,5 +24,9 @@ public class GameObjectPool {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static void clear() {
+        pool.clear();
     }
 }
